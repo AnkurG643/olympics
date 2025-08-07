@@ -5,14 +5,68 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.figure_factory as ff
+import streamlit as st
+
+# ====== PAGE CONFIG ======
+st.set_page_config(
+    page_title="OlympiTrack",
+    page_icon="🏅",
+    layout="wide"
+)
+
+# ====== CUSTOM CSS ======
+st.markdown("""
+    <style>
+        .sidebar .sidebar-content {
+            background-color: #0a1931;
+            color: white;
+        }
+        .sidebar .sidebar-content img {
+            margin-bottom: 15px;
+        }
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# ====== SIDEBAR ======
+with st.sidebar:
+    st.image("logo.png", use_container_width=True)
+    st.markdown("<h2 style='text-align:center;'>OlympiTrack</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; font-size:14px;'>Your ultimate Olympic data hub</p>", unsafe_allow_html=True)
+    user_menu = st.radio(
+        'Select an Option',
+        ('Medal Tally','overall analysis','country-wise analysis','athlete-wise analysis')
+    )
+
+# ====== HEADER SECTION ======
+col1, col2 = st.columns([1, 3])
+with col1:
+    st.image("https://upload.wikimedia.org/wikipedia/commons/5/5c/Olympic_rings_without_rims.svg", width=150)
+with col2:
+    st.markdown("<h1 style='margin-bottom:0;'>🏅 Olympic Insights Dashboard</h1>", unsafe_allow_html=True)
+    st.markdown(
+    """
+    <h3 style='
+        font-style: italic;
+        font-size: 22px;
+        color: #555;
+        margin-top: -10px;
+    '>
+        Track the triumphs, trace the trends.
+    </h3>
+    """,
+    unsafe_allow_html=True
+)
+
+
 df = pd.read_csv('data/athlete_events.csv')
 region_df = pd.read_csv('data/noc_regions.csv')
 df= preprocessor.preprocess(df, region_df)
-st.sidebar.title('Olympics Analysis')
-st.sidebar.image('https://e7.pngegg.com/pngimages/1020/402/png-clipart-2024-summer-olympics-brand-circle-area-olympic-rings-olympics-logo-text-sport.png')
-user_menu=st.sidebar.radio(
-    'select an option',('Medal Tally','overall analysis','country-wise analysis','athlete-wise analysis')
-)
+
+
 
 
 if user_menu=='Medal Tally':

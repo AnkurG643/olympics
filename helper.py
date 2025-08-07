@@ -46,3 +46,25 @@ def country_year_list(df):
     country.sort()
     country.insert(0,'Overall')
     return years,country
+
+def data_over_time(df, col):
+    temp_df = df.drop_duplicates(subset=['Year', col])
+    data_over_time = temp_df.groupby('Year')[col].nunique().reset_index()
+    data_over_time.rename(columns={'Year': 'Edition', col: f'{col}'}, inplace=True)
+    return data_over_time
+
+def most_successful(df, sport):
+    temp_df = df.dropna(subset=['Medal'])
+
+    if sport != 'overall':
+        temp_df = temp_df[temp_df['Sport'] == sport]
+
+    # Get top 15 athletes by medal count
+    top_athletes = temp_df['Name'].value_counts().reset_index()
+    top_athletes.columns = ['Name', 'Medals']  # Rename columns properly
+
+    # Merge with original df to get sport and region
+    merged = top_athletes.head(15).merge(df, on='Name', how='left')[['Name', 'Medals', 'Sport', 'region']]
+    merged = merged.drop_duplicates('Name')
+
+    return merged

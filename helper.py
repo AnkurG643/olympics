@@ -58,13 +58,30 @@ def most_successful(df, sport):
 
     if sport != 'overall':
         temp_df = temp_df[temp_df['Sport'] == sport]
-
-    # Get top 15 athletes by medal count
     top_athletes = temp_df['Name'].value_counts().reset_index()
-    top_athletes.columns = ['Name', 'Medals']  # Rename columns properly
-
-    # Merge with original df to get sport and region
+    top_athletes.columns = ['Name', 'Medals']
     merged = top_athletes.head(15).merge(df, on='Name', how='left')[['Name', 'Medals', 'Sport', 'region']]
     merged = merged.drop_duplicates('Name')
-
     return merged
+
+def Yearwise_medal_tally(df,country):
+    temp_df=df.dropna(subset=['Medal'])
+    temp_df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'], inplace=True)
+    new_df=temp_df[temp_df['region']== country]
+    final_df=new_df.groupby('Year').count()['Medal'].reset_index()
+    return final_df
+def country_event_heatmap(df, country):
+    temp_df=df.dropna(subset=['Medal'])
+    temp_df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'], inplace=True)
+    new_df=temp_df[temp_df['region']== country]
+    pt=new_df.pivot_table(index='Sport',columns='Year',values='Medal',aggfunc='count').fillna(0)
+    return pt
+def most_successful_countrywise(df, country):
+    temp_df = df.dropna(subset=['Medal'])
+    temp_df = temp_df[temp_df['region'] == country]
+    medal_counts = temp_df['Name'].value_counts().reset_index()
+    medal_counts.columns = ['Name', 'Medals']
+    top10 = medal_counts.head(10)
+    merged = top10.merge(df, on='Name', how='left')
+    result = merged[['Name', 'Medals', 'Sport']].drop_duplicates('Name')
+    return result
